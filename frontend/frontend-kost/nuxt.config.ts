@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
+
   app: {
     head: {
       link: [
@@ -21,7 +22,9 @@ export default defineNuxtConfig({
       ]
     }
   },
-  css: ['@/assets/css/main.css']
+
+  css: ['@/assets/css/main.css'],
+  modules: ['@nuxtjs/tailwindcss'],
 });
 
 

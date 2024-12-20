@@ -97,7 +97,7 @@
 <style scoped>
     .header {
         height: 70px;
-        width: 97.4%;
+        width: 100%;
         background-color: #706993;
         display: flex;
         justify-content: space-between;

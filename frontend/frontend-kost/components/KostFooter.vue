@@ -18,8 +18,8 @@
 
 <style scoped>
     .footer {
-        width: 97.4%;
-        margin-top: 140px;
+        width: 100%;
+        margin-top: 20px;
         background-color: #706993;
         padding: 20px;
         color: white;
