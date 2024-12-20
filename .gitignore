@@ -1,0 +1,8 @@
+./backend/node_modules
+./backend/.env
+./frontend/.vscode
+./frontend/node_modules
+./frontend/frontend-kost/node_modules
+./frontend/frontend-kost/README.md
+./frontend/frontend-kost/.nuxt
+./frontend/frontend-kost/.output
