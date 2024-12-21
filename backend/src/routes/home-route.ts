@@ -2,6 +2,7 @@ import { Router } from "express";
 
 export const authRouter = Router();
 
-import { Login } from "../controller/home-controller";
+import { Login, getUserId } from "../controller/home-controller";
 
 authRouter.post("/", Login);
+authRouter.post("/getId", getUserId);

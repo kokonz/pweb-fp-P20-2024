@@ -39,7 +39,7 @@ export default {
       form: {
         username: '',
         password: '',
-        role: 'USER', // Default role is USER
+        role: 'USER',
       },
       errorMessage: '',
       isLoggedIn: false,

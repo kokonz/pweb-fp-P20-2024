@@ -13,6 +13,9 @@
             <div class="username" v-if="username">
                 <p class="nav-text" @click="toggleDropdown">{{ username }}</p>
                 <div v-if="showDropdown" class="dropdown">
+                    <div class="dropdown-option" @click="redirDashboard">
+                        <p @click="redirDashboard">Dashboard</p>
+                    </div>
                     <div class="dropdown-option" @click="logout">
                         <p @click="logout">Log out</p>
                     </div>
@@ -84,6 +87,9 @@
             redirLogin() {
                 this.$router.push('/');
             },
+            redirDashboard() {
+                this.$router.push('/user');
+            },
             logout() {
                 localStorage.removeItem("loginToken");
                 this.username = null;
@@ -97,7 +103,7 @@
 <style scoped>
     .header {
         height: 70px;
-        width: 100%;
+        width: 97.4%;
         background-color: #706993;
         display: flex;
         justify-content: space-between;

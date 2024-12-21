@@ -7,7 +7,7 @@ export const Login = async (req: Request, res: Response) => {
   try {
     const user = req.body;
     var { username, password, role } = user;
-
+    
     const isUserAlreadyExist = await User.findOne({
       username: username,
     });
@@ -18,7 +18,7 @@ export const Login = async (req: Request, res: Response) => {
       });
       return;
     }
-
+    
     const isPasswordMatched = await bcrypt.compare(
       password,
       isUserAlreadyExist.password
@@ -30,7 +30,7 @@ export const Login = async (req: Request, res: Response) => {
       });
       return;
     }
-
+    
     const isRoleMatched = isUserAlreadyExist.role === role;
     if (!isRoleMatched) {
       res.status(401).json({
@@ -39,7 +39,7 @@ export const Login = async (req: Request, res: Response) => {
       });
       return;
     }
-
+    
     const token = jwt.sign(
       { _id: isUserAlreadyExist?._id },
       process.env.SECRET_KEY as string,
@@ -47,10 +47,10 @@ export const Login = async (req: Request, res: Response) => {
         expiresIn: "1d",
       }
     );
-
+    
     isUserAlreadyExist.tokens.push({ token });
     await isUserAlreadyExist.save();
-
+    
     res.status(200).json({
       status: 200,
       success: true,
@@ -63,6 +63,39 @@ export const Login = async (req: Request, res: Response) => {
     res.status(400).json({
       status: 400,
       message: error.message.toString(),
+    });
+  }
+};
+
+export const getUserId = async (req: Request, res: Response) => {
+  try {
+    const { username } = req.body;
+    
+    if (!username) {
+      res.status(400).json({
+        status: 400,
+        message: "Username is required",
+      });
+      return;
+    }
+    
+    const user = await User.findOne({ username });
+    if (!user) {
+      res.status(404).json({
+        status: 404,
+        message: "User not found",
+      });
+      return;
+    }
+    
+    res.status(200).json({
+      _id: user._id,
+    });
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      message: error.message,
     });
   }
 };

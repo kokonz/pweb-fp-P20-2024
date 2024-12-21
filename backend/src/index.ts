@@ -1,6 +1,9 @@
 import express from "express";
 import { connectToDatabase } from "./db-connection";
 import { authRouter } from "./routes/home-route";
+import { invoiceRouter } from "./routes/invoice-route";
+import { paymentRouter } from "./routes/payment-route";
+import { laporanRouter } from "./routes/laporan-route";
 import { Verification } from "./middleware/auth";
 import cors from "cors";
 
@@ -14,6 +17,9 @@ app.get("/", (_, response) => {
 });
 
 app.use("/", authRouter);
+app.use("/invoice", invoiceRouter);
+app.use("/payment", paymentRouter);
+app.use("/laporan", laporanRouter);
 
 const PORT = 4000;
 app.listen(PORT, () => {

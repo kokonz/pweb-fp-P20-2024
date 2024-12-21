@@ -1,12 +1,11 @@
 <template>
   <div>
     <KostHeader />
-    <div class="text-center">
-    <h1 class="text-2xl font-extrabold">Fasilitas Kost</h1>
-    <p class="font-light">Di KostIT, kami menjamin kenyamanan para penghuni kost dengan fasilitas - fasilitas yang disediakan berikut.</p>
+    <ReturnButton to="/home" />
+    <h1>Fasilitas Kost</h1>
+    <p>Di KostIT, kami menjamin kenyamanan para penghuni kost dengan fasilitas - fasilitas yang disediakan berikut.</p>
     <FacilityLayout>
     </FacilityLayout>
-  </div>
   </div>
   <KostFooter />
 </template>
@@ -22,9 +21,9 @@
 </script>
   
 <style scoped>
-  /* p, h1 {
+  p, h1 {
     text-align: center;
-  } */
+  }
 
   p {
     font-size: 1.1rem;
