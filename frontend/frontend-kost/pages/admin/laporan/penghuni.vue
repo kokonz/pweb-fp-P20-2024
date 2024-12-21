@@ -1,36 +1,23 @@
 <template>
   <div class="container">
-    <header class="header">
-      <h1>KostIT</h1>
-      <nav>
-        <router-link to="/facility">Fasilitas</router-link>
-        <router-link to="/rules">Peraturan</router-link>
-        <router-link to="/admin/dash">Admin</router-link>
-      </nav>
-    </header>
-
+    <KostHeader />
+    <ReturnButton />
     <main class="main-content">
-      <h1>Laporan Penghuni</h1>
-      <ul>
-        <li v-for="(report, index) in userReports" :key="index">
-          Tanggal: {{ new Date(report.createdAt).toLocaleDateString() }}, 
-          Pesan: {{ report.message }}
-        </li>
-      </ul>
-    </main>
-
-    <footer class="footer">
-      <div>
-        <h4>KostIT</h4>
-        <p>"Dari IT, untuk IT"</p>
+      <h1 class="title">Laporan Penghuni</h1>
+      <div class="report-list">
+        <div 
+        class="report-box" 
+        v-for="(report, index) in userReports" 
+        :key="index"
+        >
+        <p><strong>Tanggal:</strong> {{ new Date(report.createdAt).toLocaleDateString() }}</p>
+        <p><strong>Pesan:</strong> {{ report.message }}</p>
       </div>
-      <div>
-        <p>Alamat: Perumahan Bumi Marina Emas Timur, Blok C VII...</p>
-        <p>No. Telepon: 081420694206</p>
-      </div>
-      <p>@ 2024 KostIT | All Rights Reserved</p>
-    </footer>
-  </div>
+    </div>
+  </main>
+  
+  <KostFooter />
+</div>
 </template>
 
 <script>
@@ -38,19 +25,76 @@ export default {
   name: 'LaporanPenghuni',
   data() {
     return {
-      userReports: [], // Array untuk menyimpan data laporan penghuni
+      userReports: [],
+      role: null,
+      username: null,
     };
   },
+  watch: {
+    role(newRole) {
+      if (newRole === 'USER') {
+        this.$router.push('/home');
+      }
+    },
+  },
+  mounted() {
+    this.fetchUserReports();
+    
+    const loginToken = localStorage.getItem("loginToken");
+    this.fetchUsername();
+    if (loginToken) {
+      this.fetchUserRole(this.username);
+      this.getRole();
+    }
+    else {
+      this.$router.push('/');
+    }
+  },
   methods: {
+    async fetchUserRole(username) {
+      try {
+        const response = await fetch("http://localhost:4000/getRole", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username }),
+        });
+        
+        if (!response.ok) throw new Error("Failed to fetch user ID.");
+        const data = await response.json();
+        return data.role;
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+        return null;
+      }
+    },
+    async getRole() {
+      try {
+        const userRole = await this.fetchUserRole(this.username);
+        if (!userRole) {
+          alert("Error. Please try again.");
+          return;
+        }
+        this.role = userRole;
+        console.log("User role:", this.role);                    
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        return null;
+      }
+    },
+    fetchUsername() {
+      this.username = localStorage.getItem("username");
+    },
     async fetchUserReports() {
       try {
-        const response = await fetch('http://localhost:3000/api/user-reports');
+        const response = await fetch('http://localhost:4000/laporan/penghuni');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
         if (data.success) {
-          this.userReports = data.data; // Simpan data laporan ke dalam state
+          this.userReports = data.data;
         } else {
           console.error('Gagal mengambil laporan penghuni:', data.message);
         }
@@ -59,41 +103,55 @@ export default {
       }
     },
   },
-  mounted() {
-    this.fetchUserReports(); // Ambil data saat komponen dipasang
-  },
 };
 </script>
 
 <style scoped>
-/* Gaya CSS tetap seperti sebelumnya */
 .container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: #f8f9fa;
 }
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #6a5a8b;
-  color: white;
-  padding: 1rem;
+.title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+  text-align: center;
 }
-
-.header nav a {
-  margin: 0 1rem;
-  color: white;
-  text-decoration: none;
-}
-
 .main-content {
   padding: 2rem;
   flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
+.report-list {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.report-box {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+.report-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+.report-box p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+.report-box strong {
+  color: #333;
+}
 .footer {
   display: flex;
   flex-direction: column;

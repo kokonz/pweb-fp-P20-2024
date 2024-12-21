@@ -10,6 +10,9 @@
             <div class="nav-options">
                 <p class="nav-text" @click="redirPeraturan">Peraturan</p>
             </div>
+            <div class="nav-options" v-if="role == 'ADMIN'">
+                <p class="nav-text" @click="redirDashboard">Administrator</p>
+            </div>
             <div class="username" v-if="username">
                 <p class="nav-text" @click="toggleDropdown">{{ username }}</p>
                 <div v-if="showDropdown" class="dropdown">
@@ -35,10 +38,16 @@
             return {
                 username: null,
                 showDropdown: false,
+                role: null,
             };
         },
         mounted() {
+            const loginToken = localStorage.getItem("loginToken");
             this.fetchUsername();
+            if (loginToken) {
+                this.fetchUserRole(this.username);
+                this.getRole();
+            }
         },
         methods: {
             /*
@@ -69,6 +78,38 @@
                     console.warn("No login token found in local storage.");
                 }
             },*/
+            async fetchUserRole(username) {
+                try {
+                    const response = await fetch("http://localhost:4000/getRole", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ username }),
+                    });
+
+                    if (!response.ok) throw new Error("Failed to fetch user ID.");
+                    const data = await response.json();
+                    return data.role;
+                } catch (error) {
+                    console.error("Error fetching user ID:", error);
+                    return null;
+                }
+            },
+            async getRole() {
+                try {
+                    const userRole = await this.fetchUserRole(this.username);
+                    if (!userRole) {
+                        alert("Error. Please try again.");
+                        return;
+                    }
+                    this.role = userRole;
+                    console.log("User role:", this.role);                    
+                } catch (error) {
+                    console.error("Error fetching user role:", error);
+                    return null;
+                }
+            },
             fetchUsername() {
                 this.username = localStorage.getItem("username");
             },
@@ -88,10 +129,16 @@
                 this.$router.push('/');
             },
             redirDashboard() {
-                this.$router.push('/user');
+                if(this.role === 'USER') {
+                    this.$router.push('/user');
+                }
+                else if(this.role === 'ADMIN') {
+                    this.$router.push('/admin/dashboard');
+                }
             },
             logout() {
                 localStorage.removeItem("loginToken");
+                localStorage.removeItem("username");
                 this.username = null;
                 this.showDropdown = false;
                 this.$router.push('/');

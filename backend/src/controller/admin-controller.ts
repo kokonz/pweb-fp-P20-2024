@@ -1,51 +1,58 @@
 import { Request, Response } from "express";
+import { Room } from "../models/room-model";
 
-// Controller untuk Admin Dashboard
-export const AdminDashboard = (req: Request, res: Response): void => {
-  res.status(200).json({
-    message: "Selamat datang di Admin Dashboard!",
-  });
+export const getRoomDetails = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const roomDetails = await Room.find().select("-__v");
+    
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: "Room details retrieved successfully",
+      data: roomDetails,
+    });
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
 };
 
-// Controller untuk mendapatkan detail penghuni berdasarkan ID
-export const GetPenghuniDetail = (req: Request, res: Response): void => {
+export const updateRoomData = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
-  // Contoh data dummy
-  const penghuni = {
-    id: id,
-    nama: "John Doe",
-    kamar: "A-101",
-    status: "Aktif",
-  };
-  res.status(200).json({
-    message: "Detail Penghuni",
-    data: penghuni,
-  });
-};
-
-// Controller untuk mendapatkan laporan fasilitas
-export const GetLaporanFasilitas = (req: Request, res: Response): void => {
-  // Contoh data dummy
-  const laporanFasilitas = [
-    { id: 1, fasilitas: "Wi-Fi", status: "Baik" },
-    { id: 2, fasilitas: "AC", status: "Rusak" },
-    { id: 3, fasilitas: "Kamar Mandi", status: "Baik" },
-  ];
-  res.status(200).json({
-    message: "Laporan Fasilitas",
-    data: laporanFasilitas,
-  });
-};
-
-// Controller untuk mendapatkan laporan penghuni
-export const GetLaporanPenghuni = (req: Request, res: Response): void => {
-  // Contoh data dummy
-  const laporanPenghuni = [
-    { id: 1, nama: "John Doe", kamar: "A-101", status: "Aktif" },
-    { id: 2, nama: "Jane Smith", kamar: "B-201", status: "Tidak Aktif" },
-  ];
-  res.status(200).json({
-    message: "Laporan Penghuni",
-    data: laporanPenghuni,
-  });
+  const { occupied, username, rent_periods } = req.body;
+  
+  try {
+    const room = await Room.findOneAndUpdate(
+      { id: id },
+      { 
+        occupied: occupied,
+        username: username,
+        rent_periods: rent_periods 
+      },
+      { new: true }
+    ).select("-__v");
+    
+    if (!room) {
+      res.status(404).json({
+        message: "Room not found",
+      });
+      return;
+    }
+    
+    res.status(200).json({
+      message: "Room data updated successfully",
+      data: room,
+    });
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
 };

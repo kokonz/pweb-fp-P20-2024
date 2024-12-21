@@ -4,6 +4,8 @@ import { authRouter } from "./routes/home-route";
 import { invoiceRouter } from "./routes/invoice-route";
 import { paymentRouter } from "./routes/payment-route";
 import { laporanRouter } from "./routes/laporan-route";
+import { adminRouter } from "./routes/admin-route";
+import { occupancyRouter } from "./routes/occupancy-route";
 import { Verification } from "./middleware/auth";
 import cors from "cors";
 
@@ -20,6 +22,8 @@ app.use("/", authRouter);
 app.use("/invoice", invoiceRouter);
 app.use("/payment", paymentRouter);
 app.use("/laporan", laporanRouter);
+app.use("/admin", adminRouter);
+app.use("/occupancy", occupancyRouter);
 
 const PORT = 4000;
 app.listen(PORT, () => {
